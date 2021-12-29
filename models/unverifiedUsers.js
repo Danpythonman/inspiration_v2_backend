@@ -3,7 +3,15 @@ const mongoose = require("mongoose");
 const UnverifiedUserSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true
+        required: [true, "Email is required"],
+        validate: {
+            validator: function (v) {
+                // Email regex from http://emailregex.com/
+                return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                .test(v);
+            },
+            message: props => `${props.value} is not a valid email address`
+        }
     },
     verificationHash: {
         type: String,
