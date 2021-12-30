@@ -48,8 +48,8 @@ router.post("/signup", userManagementController.signup);
  *             verificationCode:
  *               type: string
  *     responses:
- *       200:
- *         description: Email verified, database entry created.
+ *       201:
+ *         description: Email verified, database entry created and auth and refresh tokens sent.
  *       400:
  *         description: Verification code invalid.
  *       404:
