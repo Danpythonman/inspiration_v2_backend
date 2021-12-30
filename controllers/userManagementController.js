@@ -123,10 +123,28 @@ const refresh = async (req, res) => {
     }
 }
 
+const changeName = async (req, res) => {
+    try {
+        // req.token and req.body.user are created by the jwtController middlewear
+        const updatedUser = await databaseService.updateUser(req.token.email, req.body.updatedName);
+        if (!updatedUser) {
+            // This is probably not a 404 error because the user had to be found
+            // in the database to pass the JWT middlewear to get to this function.
+            res.status(500).send("Unable to change name");
+            return;
+        }
+
+        res.status(200).send("Name changed successfully");
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 module.exports = {
     signup,
     verifySignup,
     login,
     verifyLogin,
-    refresh
+    refresh,
+    changeName
 };

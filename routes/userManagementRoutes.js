@@ -137,4 +137,33 @@ router.post("/login/verify", userManagementController.verifyLogin);
  */
 router.post("/refresh", jwtController.verifyRefreshToken, userManagementController.refresh);
 
+/**
+ * @swagger
+ * /name:
+ *   put:
+ *     tags:
+ *       - User Management
+ *     description: Changes the name of the user specified by the email in the payload of the auth token sent.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Object containing user's updated name.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             updatedName:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Name changed successfully.
+ *       401:
+ *         description: Unauthorized. No refresh token sent or refresh token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error or error when updating user's name.
+ */
+router.put("/name", jwtController.verifyAuthToken, userManagementController.changeName);
+
 module.exports = router;
