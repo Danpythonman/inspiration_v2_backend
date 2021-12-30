@@ -69,7 +69,7 @@ const generateSecretHashesAndTokens = async (email) => {
  * @param {string} userAuthHash User's secret hash for auth tokens.
  * @param {string} userRefreshHash User's secret hash for refresh tokens.
  *
- * @returns {Object} Object containing secret hashes and tokens.
+ * @returns {Object} Object containing auth and refresh tokens.
  */
 const generateTokens = (email, userAuthHash, userRefreshHash) => {
     // Create auth token
@@ -92,7 +92,67 @@ const generateTokens = (email, userAuthHash, userRefreshHash) => {
     };
 }
 
+/**
+ * Generates auth token given the secret auth token hash stored in the user's database entry.
+ *
+ * @param {string} email Email of the user for which the tokens and hashes are being created.
+ * @param {string} userAuthHash User's secret hash for auth tokens.
+ *
+ * @returns {string} Auth token.
+ */
+ const generateAuthToken = (email, userAuthHash) => {
+    // Create auth token
+    const authToken = jwt.sign(
+        { email: email },
+        process.env.JWT_AUTH_KEY + userAuthHash,
+        { expiresIn: process.env.AUTH_TOKEN_LIFESPAN }
+    );
+
+    return authToken;
+}
+
+/**
+ * Decodes the token and returns the decoded payload without validating the token's signature.
+ *
+ * @param {string} token Token to be decoded.
+ *
+ * @returns {Object} Decoded payload of the token.
+ */
+const decodeToken = (token) => {
+    return jwt.decode(token);
+}
+
+/**
+ * Verifies the auth token and returns the payload if valid.
+ * If invalid, error.
+ *
+ * @param {string} token Token to be decoded.
+ * @param {string} userAuthHash User's secret hash for auth tokens.
+ *
+ * @returns {Object} Decoded payload of the token.
+ */
+const verifyAuthToken = (token, userAuthHash) => {
+    return jwt.verify(token, process.env.JWT_AUTH_KEY + userAuthHash);
+}
+
+/**
+ * Verifies the auth token and returns the payload if valid.
+ * If invalid, error.
+ *
+ * @param {string} token Token to be decoded.
+ * @param {string} userRefreshHash User's secret hash for refresh tokens.
+ *
+ * @returns {Object} Decoded payload of the token.
+ */
+const verifyRefreshToken = (token, userRefreshHash) => {
+    return jwt.verify(token, process.env.JWT_REFRESH_KEY + userRefreshHash);
+}
+
 module.exports = {
     generateSecretHashesAndTokens,
-    generateTokens
+    generateTokens,
+    generateAuthToken,
+    decodeToken,
+    verifyAuthToken,
+    verifyRefreshToken
 };
