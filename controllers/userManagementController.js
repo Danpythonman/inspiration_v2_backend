@@ -1,67 +1,31 @@
-const crypto = require("crypto");
-const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const VerificationRequestModel = require("../models/verificationRequests");
-const UserModel = require("../models/users");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+const databaseService = require("../services/databaseService");
+const cryptographyService = require("../services/cryptographyService");
+const emailService = require("../services/emailService");
+const jwtService = require("../services/jwtService");
+const { Error: { ValidationError } } = require("mongoose");
 
 const signup = async (req, res) => {
     try {
-        if (await UserModel.findOne({ email: req.body.email })) {
+        if (await databaseService.getUserByEmail(req.body.email)) {
             res.status(409).send("Email taken");
             return;
         }
 
-        if (await VerificationRequestModel.findOne({ email: req.body.email })) {
+        if (await databaseService.getVerificationRequestByEmail(req.body.email)) {
             res.status(409).send("Code already sent to email");
             return;
         }
 
-        const verificationCode = crypto.randomInt(100000, 1000000).toString();
+        const verificationCode = cryptographyService.generateVerificationCode();
+        const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
 
-        const verificationHash = await bcrypt.hash(verificationCode, 10);
+        await databaseService.createVerificationRequest(req.body.email, verificationHash);
 
-        await VerificationRequestModel.create({
-            email: req.body.email,
-            verificationHash: verificationHash
-        });
-
-        const emailMessage = {
-            from: "dannyjdigio@gmail.com",
-            to: "dannyjdigio@gmail.com",
-            subject: "Email Verification",
-            text: `Your code is ${verificationCode}`
-        }
-
-        // If the test email environment variables are set, then use them
-        // otherwise, use the email environment variables for production    
-        const transporter = process.env.TEST_EMAIL_HOST
-            ? nodemailer.createTransport({
-                host: process.env.TEST_EMAIL_HOST,
-                port: process.env.TEST_EMAIL_PORT,
-                auth: {
-                    user: process.env.TEST_EMAIL_USERNAME,
-                    pass: process.env.TEST_EMAIL_PASSWORD
-                }
-            })
-            : nodemailer.createTransport({
-                service: "gmail",
-                auth: {
-                    type: "OAuth2",
-                    user: process.env.EMAIL_USERNAME,
-                    pass: process.env.EMAIL_PASSWORD,
-                    clientId: process.env.OAUTH_CLIENTID,
-                    clientSecret: process.env.OAUTH_CLIENT_SECRET,
-                    refreshToken: process.env.OAUTH_REFRESH_TOKEN
-                }
-            });
-
-        await transporter.sendMail(emailMessage);
+        await emailService.sendVerificationCode(req.body.email, verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
-        if (err instanceof mongoose.Error.ValidationError) {
+        if (err instanceof ValidationError) {
             res.status(400).send(`${req.body.email} is an invalid email address`);
         } else {
             res.status(500).send(err.message);
@@ -72,58 +36,21 @@ const signup = async (req, res) => {
 const verifyAccount = async (req, res) => {
     try{
         // Make sure user has already registered email for verification
-        const verificationRequest = await VerificationRequestModel.findOne({ email: req.body.email });
+        const verificationRequest = await databaseService.getVerificationRequestByEmail(req.body.email);
         if (!verificationRequest) {
             res.status(404).send(`Verification time exceeded, or ${req.body.email} has not registered for verification yet`);
             return;
         }
 
         // Check user's verification code
-        if (!await bcrypt.compare(req.body.verificationCode, verificationRequest.verificationHash)) {
+        if (!await cryptographyService.verifyVerificationCode(req.body.verificationCode, verificationRequest.verificationHash)) {
             res.status(400).send("Verification code invalid");
             return;
         }
 
-        /*
-         * CREATING AUTH AND REFRESH TOKENS
-         *
-         * The secret key for each token is the secret key from the environment variable
-         * concatenated with the secret key stored in their database entry.
-         *
-         * The secret key in their database entry is the hash of a random number
-         * from character 29 to the end of the string.
-         *
-         * (With bcrypt the hash part starts at character 29).
-         * (This is to keep the secret key from being very long).
-         */
+        const { userAuthHash, userRefreshHash, authToken, refreshToken } = await jwtService.generateSecretHashesAndTokens(req.body.email);
 
-        // Create hash to use as part of the secret key of the auth token
-        const userAuthKey = crypto.randomInt(100000, 1000000).toString();
-        const userAuthHash = String(await bcrypt.hash(userAuthKey, 10)).substring(29);
-        // Create auth token
-        const authToken = jwt.sign(
-            { email: req.body.email },
-            process.env.JWT_AUTH_KEY + userAuthHash,
-            { expiresIn: process.env.AUTH_TOKEN_LIFESPAN }
-        );
-
-        // Create hash to use as part of the secret key of the refresh token
-        const userRefreshKey = crypto.randomInt(100000, 1000000).toString();
-        const userRefreshHash = String(await bcrypt.hash(userRefreshKey, 10)).substring(29);
-        // Create refresh token
-        const refreshToken = jwt.sign(
-            { email: req.body.email },
-            process.env.JWT_REFRESH_KEY + userRefreshHash,
-            { expiresIn: process.env.REFRESH_TOKEN_LIFESPAN }
-        );
-
-        await UserModel.create({
-            email: req.body.email,
-            name: req.body.name,
-            authTokenHash: userAuthHash,
-            refreshTokenHash: userRefreshHash,
-            lastLoginDate: Date.now()
-        });
+        await databaseService.createUser(req.body.email, req.body.name, userAuthHash, userRefreshHash);
 
         res.status(201).send({ auth: authToken, refresh: refreshToken });
     } catch (err) {
