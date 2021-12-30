@@ -58,7 +58,33 @@ const verifyAccount = async (req, res) => {
     }
 }
 
+const login = async (req, res) => {
+    try {
+        if (await databaseService.getVerificationRequestByEmail(req.body.email)) {
+            res.status(409).send("Code already sent to email");
+            return;
+        }
+
+        if (!await databaseService.getUserByEmail(req.body.email)) {
+            res.status(404).send(`User with email ${req.body.email} does not exist`);
+            return;
+        }
+
+        const verificationCode = cryptographyService.generateVerificationCode();
+        const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
+
+        await databaseService.createVerificationRequest(req.body.email, verificationHash);
+
+        await emailService.sendVerificationCode(req.body.email, verificationCode);
+
+        res.status(200).send(`Verification code sent to ${req.body.email}`);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 module.exports = {
     signup,
-    verifyAccount
+    verifyAccount,
+    login
 };

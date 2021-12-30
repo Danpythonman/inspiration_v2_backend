@@ -59,4 +59,31 @@ router.post("/signup", userManagementController.signup);
  */
 router.post("/verify", userManagementController.verifyAccount);
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     tags:
+ *       - User Management
+ *     description: Sends email with verification code to log in.
+ *     requestBody:
+ *       description: Object containing user's email.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             email:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Verification code send to email.
+ *       404:
+ *         description: No user with specified email found.
+ *       409:
+ *         description: Email already taken or email recently sent for verification.
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/login", userManagementController.login);
+
 module.exports = router;
