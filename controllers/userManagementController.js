@@ -33,7 +33,7 @@ const signup = async (req, res) => {
     }
 }
 
-const verifyAccount = async (req, res) => {
+const verifySignup = async (req, res) => {
     try{
         // Make sure user has already registered email for verification
         const verificationRequest = await databaseService.getVerificationRequestByEmail(req.body.email);
@@ -85,6 +85,6 @@ const login = async (req, res) => {
 
 module.exports = {
     signup,
-    verifyAccount,
+    verifySignup,
     login
 };

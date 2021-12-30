@@ -57,7 +57,7 @@ router.post("/signup", userManagementController.signup);
  *       500:
  *         description: Internal server error
  */
-router.post("/verify", userManagementController.verifyAccount);
+router.post("/signup/verify", userManagementController.verifySignup);
 
 /**
  * @swagger
