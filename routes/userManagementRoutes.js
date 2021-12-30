@@ -30,7 +30,7 @@ router.post("/signup", userManagementController.signup);
 
 /**
  * @swagger
- * /verify:
+ * /signup/verify:
  *   post:
  *     tags:
  *       - User Management
