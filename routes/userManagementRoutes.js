@@ -86,4 +86,33 @@ router.post("/signup/verify", userManagementController.verifySignup);
  */
 router.post("/login", userManagementController.login);
 
+/**
+ * @swagger
+ * /login/verify:
+ *   post:
+ *     tags:
+ *       - User Management
+ *     description: Verifies a login request.
+ *     requestBody:
+ *       description: Object containing user's email and verification code.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             email:
+ *               type: string
+ *             verificationCode:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Email verified, auth and refresh tokens sent.
+ *       400:
+ *         description: Verification code invalid.
+ *       404:
+ *         description: Verification time limit exceeded, email has not been registered for verification, or user with specified email not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/login/verify", userManagementController.verifyLogin);
+
 module.exports = router;

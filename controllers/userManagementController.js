@@ -83,8 +83,38 @@ const login = async (req, res) => {
     }
 }
 
+const verifyLogin = async (req, res) => {
+    try {
+        // Make sure user has already registered email for verification
+        const verificationRequest = await databaseService.getVerificationRequestByEmail(req.body.email);
+        if (!verificationRequest) {
+            res.status(404).send(`Verification time exceeded, or ${req.body.email} has not registered for verification yet`);
+            return;
+        }
+
+        const loginUser = await databaseService.getUserByEmail(req.body.email);
+        if (!loginUser) {
+            res.status(404).send(`User with email ${req.body.email} not found`);
+            return;
+        }
+
+        // Check user's verification code
+        if (!await cryptographyService.verifyVerificationCode(req.body.verificationCode, verificationRequest.verificationHash)) {
+            res.status(400).send("Verification code invalid");
+            return;
+        }
+
+        const { authToken, refreshToken } = await jwtService.generateTokens(req.body.email, loginUser.authTokenHash, loginUser.refreshTokenHash);
+
+        res.status(200).send({ auth: authToken, refresh: refreshToken });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 module.exports = {
     signup,
     verifySignup,
-    login
+    login,
+    verifyLogin
 };
