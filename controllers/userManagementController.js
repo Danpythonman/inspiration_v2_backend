@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const UnverifiedUserModel = require("../models/unverifiedUsers");
+const VerificationRequestModel = require("../models/verificationRequests");
 const UserModel = require("../models/users");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
@@ -13,7 +13,7 @@ const signup = async (req, res) => {
             return;
         }
 
-        if (await UnverifiedUserModel.findOne({ email: req.body.email })) {
+        if (await VerificationRequestModel.findOne({ email: req.body.email })) {
             res.status(409).send("Code already sent to email");
             return;
         }
@@ -22,7 +22,7 @@ const signup = async (req, res) => {
 
         const verificationHash = await bcrypt.hash(verificationCode, 10);
 
-        await UnverifiedUserModel.create({
+        await VerificationRequestModel.create({
             email: req.body.email,
             verificationHash: verificationHash
         });
@@ -72,14 +72,14 @@ const signup = async (req, res) => {
 const verifyAccount = async (req, res) => {
     try{
         // Make sure user has already registered email for verification
-        const unverifiedUser = await UnverifiedUserModel.findOne({ email: req.body.email });
-        if (!unverifiedUser) {
+        const verificationRequest = await VerificationRequestModel.findOne({ email: req.body.email });
+        if (!verificationRequest) {
             res.status(404).send(`Verification time exceeded, or ${req.body.email} has not registered for verification yet`);
             return;
         }
 
         // Check user's verification code
-        if (!await bcrypt.compare(req.body.verificationCode, unverifiedUser.verificationHash)) {
+        if (!await bcrypt.compare(req.body.verificationCode, verificationRequest.verificationHash)) {
             res.status(400).send("Verification code invalid");
             return;
         }
