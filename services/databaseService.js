@@ -70,7 +70,7 @@ const createVerificationRequest = async (email, verificationHash) => {
  *
  * @returns {Promise} The updated object of the user. If update unsuccessful, undefined is returned.
  */
-const updateUser = async (email, updatedName) => {
+const updateUserName = async (email, updatedName) => {
     return await UserModel.findOneAndUpdate({ email: email }, { name: updatedName });
 }
 
@@ -79,5 +79,5 @@ module.exports = {
     getUserByEmail,
     createVerificationRequest,
     getVerificationRequestByEmail,
-    updateUser
+    updateUserName
 };
