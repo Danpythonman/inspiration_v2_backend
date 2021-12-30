@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const userManagementController = require("../controllers/userManagementController");
+const jwtController = require("../controllers/jwtController");
 
 /**
  * @swagger
@@ -134,6 +135,6 @@ router.post("/login/verify", userManagementController.verifyLogin);
  *       500:
  *         description: Internal server error
  */
-router.post("/refresh", userManagementController.refresh);
+router.post("/refresh", jwtController.verifyRefreshToken, userManagementController.refresh);
 
 module.exports = router;

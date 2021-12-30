@@ -114,32 +114,8 @@ const verifyLogin = async (req, res) => {
 
 const refresh = async (req, res) => {
     try {
-        const bearerHeader = req.headers.authorization;
-        if (!bearerHeader) {
-            res.setHeader("WWW-Authenticate", "Bearer");
-            res.status(401).send("Unauthorized - No token provided");
-            return;
-        }
-
-        const token = bearerHeader.split(" ")[1];
-
-        const payload = jwtService.decodeToken(token);
-
-        const refreshUser = await databaseService.getUserByEmail(payload.email);
-        if (!refreshUser) {
-            res.status(404).send(`User with email ${payload.email} not found`);
-            return;
-        }
-
-        try {
-            jwtService.verifyRefreshToken(token, refreshUser.refreshTokenHash);
-        } catch (jwtError) {
-            res.setHeader("WWW-Authenticate", "Bearer");
-            res.status(401).send(`Unauthorized - ${jwtError.message}`);
-            return;
-        }
-
-        const authToken = jwtService.generateAuthToken(payload.email, refreshUser.authTokenHash);
+        // req.token and req.body.user are created by the jwtController middlewear
+        const authToken = jwtService.generateAuthToken(req.token.email, req.body.user.authTokenHash);
 
         res.status(200).send(authToken);
     } catch (err) {
