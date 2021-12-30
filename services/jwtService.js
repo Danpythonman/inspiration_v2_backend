@@ -57,6 +57,42 @@ const generateSecretHashesAndTokens = async (email) => {
     };
 }
 
+/**
+ * Generates auth and refresh tokens given the secret hashes stored in the user's database entry.
+ *
+ * The secret key for auth and refresh tokens is made from environment variables
+ * and the secret hash stored in the specific user's database entry.
+ *
+ * This is so that changing the hash in the user's database entry will invalidate all current tokens.
+ *
+ * @param {string} email Email of the user for which the tokens and hashes are being created.
+ * @param {string} userAuthHash User's secret hash for auth tokens.
+ * @param {string} userRefreshHash User's secret hash for refresh tokens.
+ *
+ * @returns {Object} Object containing secret hashes and tokens.
+ */
+const generateTokens = (email, userAuthHash, userRefreshHash) => {
+    // Create auth token
+    const authToken = jwt.sign(
+        { email: email },
+        process.env.JWT_AUTH_KEY + userAuthHash,
+        { expiresIn: process.env.AUTH_TOKEN_LIFESPAN }
+    );
+
+    // Create refresh token
+    const refreshToken = jwt.sign(
+        { email: email },
+        process.env.JWT_REFRESH_KEY + userRefreshHash,
+        { expiresIn: process.env.REFRESH_TOKEN_LIFESPAN }
+    );
+
+    return {
+        authToken,
+        refreshToken
+    };
+}
+
 module.exports = {
-    generateSecretHashesAndTokens
+    generateSecretHashesAndTokens,
+    generateTokens
 };
