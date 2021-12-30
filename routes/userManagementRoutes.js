@@ -115,4 +115,25 @@ router.post("/login", userManagementController.login);
  */
 router.post("/login/verify", userManagementController.verifyLogin);
 
+/**
+ * @swagger
+ * /refresh:
+ *   post:
+ *     tags:
+ *       - User Management
+ *     description: Verifies refresh token and sends new auth token.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Refresh token valid, new auth token sent.
+ *       401:
+ *         description: Unauthorized. No refresh token sent or refresh token invalid.
+ *       404:
+ *         description: User specified by email in refresh token payload not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/refresh", userManagementController.refresh);
+
 module.exports = router;
