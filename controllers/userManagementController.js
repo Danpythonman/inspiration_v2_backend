@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const UnverifiedUserModel = require("../models/unverifiedUsers");
 const UserModel = require("../models/users");
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
@@ -60,7 +61,11 @@ const signup = async (req, res) => {
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
-        res.status(500).send(err.message);
+        if (err instanceof mongoose.Error.ValidationError) {
+            res.status(400).send(`${req.body.email} is an invalid email address`);
+        } else {
+            res.status(500).send(err.message);
+        }
     }
 }
 

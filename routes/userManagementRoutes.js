@@ -9,7 +9,7 @@ const userManagementController = require("../controllers/userManagementControlle
  *       - User Management
  *     description: Creates a user to be verified by email.
  *     requestBody:
- *       description: Object containing user's email and name.
+ *       description: Object containing user's email.
  *       required: true
  *       content:
  *         application/json:
@@ -19,6 +19,8 @@ const userManagementController = require("../controllers/userManagementControlle
  *     responses:
  *       200:
  *         description: Verification code send to email.
+ *       400:
+ *         description: Invalid email address.
  *       409:
  *         description: Email already taken or email recently sent for verification.
  *       500:
