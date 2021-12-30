@@ -41,7 +41,7 @@ const getUserByEmail = async (email) => {
  * @param {string} email The email of the user.
  * @param {string} verificationHash The hash of the verification code.
  *
- * @returns {Promise<undefined>} 
+ * @returns {Promise<undefined>}
  */
 const createVerificationRequest = async (email, verificationHash) => {
     await VerificationRequestModel.create({
@@ -62,9 +62,22 @@ const createVerificationRequest = async (email, verificationHash) => {
     return await VerificationRequestModel.findOne({ email: email });
 }
 
+/**
+ * Updates the name in the database of the user with the specified email.
+ *
+ * @param {string} email The email of the user.
+ * @param {string} updatedName The user's updated name.
+ *
+ * @returns {Promise} The updated object of the user. If update unsuccessful, undefined is returned.
+ */
+const updateUser = async (email, updatedName) => {
+    return await UserModel.findOneAndUpdate({ email: email }, { name: updatedName });
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
     createVerificationRequest,
-    getVerificationRequestByEmail
+    getVerificationRequestByEmail,
+    updateUser
 };
