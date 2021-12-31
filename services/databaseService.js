@@ -64,6 +64,21 @@ const createVerificationRequest = async (email, verificationType, verificationHa
 }
 
 /**
+ * Deletes the specified verification request in the database.
+ *
+ * If no verification request is found, an error is not thrown (undefined still returned).
+ * This is because the verification request may have timed out before it can be found and deleted,
+ * which is fine since it was about to be deleted anyways.
+ *
+ * @param {string} email The email associated with the verification request.
+ *
+ * @returns {Promise<undefined>}
+ */
+ const deleteVerificationRequest = async (email) => {
+    await VerificationRequestModel.findOneAndDelete({ email: email });
+}
+
+/**
  * Updates the name in the database of the user with the specified email.
  *
  * @param {string} email The email of the user.
@@ -104,6 +119,7 @@ module.exports = {
     getUserByEmail,
     createVerificationRequest,
     getVerificationRequestByEmail,
+    deleteVerificationRequest,
     updateUserName,
     changeUserSecretHashes,
     deleteUser

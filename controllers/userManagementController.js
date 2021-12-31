@@ -57,6 +57,8 @@ const verifySignup = async (req, res) => {
 
         await databaseService.createUser(req.body.email, req.body.name, userAuthHash, userRefreshHash);
 
+        await databaseService.deleteVerificationRequest(req.body.email);
+
         res.status(201).send({ auth: authToken, refresh: refreshToken });
     } catch (err) {
         res.status(500).send(err.message);
@@ -115,6 +117,8 @@ const verifyLogin = async (req, res) => {
         }
 
         const { authToken, refreshToken } = await jwtService.generateTokens(req.body.email, loginUser.authTokenHash, loginUser.refreshTokenHash);
+
+        await databaseService.deleteVerificationRequest(req.body.email);
 
         res.status(200).send({ auth: authToken, refresh: refreshToken });
     } catch (err) {
@@ -218,6 +222,8 @@ const verifyDelete = async (req, res) => {
             res.status(404).send(`User with email ${req.token.email} not found`);
             return;
         }
+
+        await databaseService.deleteVerificationRequest(req.token.email);
 
         res.status(200).send("User deleted");
     } catch (err) {
