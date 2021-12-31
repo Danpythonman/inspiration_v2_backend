@@ -87,11 +87,23 @@ const changeUserSecretHashes = async (email, userAuthHash, userRefreshHash) => {
     return await UserModel.findOneAndUpdate({ email: email }, { authTokenHash: userAuthHash, refreshTokenHash: userRefreshHash });
 }
 
+/**
+ * Deletes the specified user in the database.
+ *
+ * @param {string} email The email of the user.
+ *
+ * @returns {Promise} The deleted object of the user. If deleting unsuccessful, undefined is returned.
+ */
+const deleteUser = async (email) => {
+    return await UserModel.findOneAndDelete({ email: email });
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
     createVerificationRequest,
     getVerificationRequestByEmail,
     updateUserName,
-    changeUserSecretHashes
+    changeUserSecretHashes,
+    deleteUser
 };
