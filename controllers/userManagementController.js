@@ -140,11 +140,30 @@ const changeName = async (req, res) => {
     }
 }
 
+const revokeTokens = async (req, res) => {
+    try {
+        const { userAuthHash, userRefreshHash } = await jwtService.generateSecretHashes();
+
+        const updatedUser = await databaseService.changeUserSecretHashes(req.token.email, userAuthHash, userRefreshHash);
+        if (!updatedUser) {
+            // This is probably not a 404 error because the user had to be found
+            // in the database to pass the JWT middlewear to get to this function.
+            res.status(500).send("Unable to log out of all devices");
+            return;
+        }
+
+        res.status(200).send("Logged out of all devices");
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 module.exports = {
     signup,
     verifySignup,
     login,
     verifyLogin,
     refresh,
-    changeName
+    changeName,
+    revokeTokens
 };

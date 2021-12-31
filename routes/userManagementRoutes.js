@@ -166,4 +166,28 @@ router.post("/refresh", jwtController.verifyRefreshToken, userManagementControll
  */
 router.put("/name", jwtController.verifyAuthToken, userManagementController.changeName);
 
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     tags:
+ *       - User Management
+ *     description: >-
+ *       Changes the secret hashes for auth and refresh tokens in the user's database entry,
+ *       which renders all pre-existing auth and refresh tokens invalid,
+ *       effectively logging out of all devices.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully logged out of all devices.
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error or error when updating user's secret hashes.
+ */
+router.post("/logout", jwtController.verifyAuthToken, userManagementController.revokeTokens);
+
 module.exports = router;
