@@ -158,7 +158,7 @@ router.post("/refresh", jwtController.verifyRefreshToken, userManagementControll
  *       200:
  *         description: Name changed successfully.
  *       401:
- *         description: Unauthorized. No refresh token sent or refresh token invalid.
+ *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:
  *         description: User specified by email in auth token payload not found.
  *       500:
