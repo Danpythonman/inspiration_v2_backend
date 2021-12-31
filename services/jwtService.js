@@ -58,6 +58,32 @@ const generateSecretHashesAndTokens = async (email) => {
 }
 
 /**
+ * Generates secret hashes for auth and refresh tokens.
+ *
+ * The secret key for auth and refresh tokens is made from environment variables
+ * and the secret hash returned by this function
+ * (which will be stored in the specific users database entry).
+ *
+ * This is so that changing the hash in the user's database entry will invalidate all current tokens.
+ *
+ * @returns {Object} Object containing secret auth hash and secret refresh hash.
+ */
+ const generateSecretHashes = async () => {
+    // Create hash to use as part of the secret key of the auth token
+    const userAuthKey = crypto.randomInt(100000, 1000000).toString();
+    const userAuthHash = String(await bcrypt.hash(userAuthKey, 10)).substring(29);
+
+    // Create hash to use as part of the secret key of the refresh token
+    const userRefreshKey = crypto.randomInt(100000, 1000000).toString();
+    const userRefreshHash = String(await bcrypt.hash(userRefreshKey, 10)).substring(29);
+
+    return {
+        userAuthHash,
+        userRefreshHash
+    };
+}
+
+/**
  * Generates auth and refresh tokens given the secret hashes stored in the user's database entry.
  *
  * The secret key for auth and refresh tokens is made from environment variables
@@ -150,6 +176,7 @@ const verifyRefreshToken = (token, userRefreshHash) => {
 
 module.exports = {
     generateSecretHashesAndTokens,
+    generateSecretHashes,
     generateTokens,
     generateAuthToken,
     decodeToken,
