@@ -158,6 +158,58 @@ const revokeTokens = async (req, res) => {
     }
 }
 
+const requestDelete = async (req, res) => {
+    try {
+        if (await databaseService.getVerificationRequestByEmail(req.token.email)) {
+            res.status(409).send("Code already sent to email");
+            return;
+        }
+
+        if (!await databaseService.getUserByEmail(req.token.email)) {
+            res.status(404).send(`User with email ${req.token.email} does not exist`);
+            return;
+        }
+
+        const verificationCode = cryptographyService.generateVerificationCode();
+        const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
+
+        await databaseService.createVerificationRequest(req.token.email, verificationHash);
+
+        await emailService.sendVerificationCode(req.token.email, verificationCode);
+
+        res.status(200).send(`Verification code sent to ${req.token.email}`);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
+const verifyDelete = async (req, res) => {
+    try {
+        // Make sure user has already registered email for verification
+        const verificationRequest = await databaseService.getVerificationRequestByEmail(req.token.email);
+        if (!verificationRequest) {
+            res.status(404).send(`Verification time exceeded, or ${req.token.email} has not registered for verification yet`);
+            return;
+        }
+
+        // Check user's verification code
+        if (!await cryptographyService.verifyVerificationCode(req.body.verificationCode, verificationRequest.verificationHash)) {
+            res.status(400).send("Verification code invalid");
+            return;
+        }
+
+        const userToDelete = await databaseService.deleteUser(req.token.email);
+        if (!userToDelete) {
+            res.status(404).send(`User with email ${req.token.email} not found`);
+            return;
+        }
+
+        res.status(200).send("User deleted");
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 module.exports = {
     signup,
     verifySignup,
@@ -165,5 +217,7 @@ module.exports = {
     verifyLogin,
     refresh,
     changeName,
-    revokeTokens
+    revokeTokens,
+    requestDelete,
+    verifyDelete
 };

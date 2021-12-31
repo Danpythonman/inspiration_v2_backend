@@ -190,4 +190,54 @@ router.put("/name", jwtController.verifyAuthToken, userManagementController.chan
  */
 router.post("/logout", jwtController.verifyAuthToken, userManagementController.revokeTokens);
 
+/**
+ * @swagger
+ * /delete:
+ *   post:
+ *     tags:
+ *       - User Management
+ *     description: >-
+ *       Sends and email to the user to confirm their account deletion.
+ *       User to be deleted is specified by email in the payload of the auth token sent.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Verification code sent to email.
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       409:
+ *         description: Verification email recently sent.
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/delete", jwtController.verifyAuthToken, userManagementController.requestDelete);
+
+/**
+ * @swagger
+ * /delete/verify:
+ *   delete:
+ *     tags:
+ *       - User Management
+ *     description: >-
+ *       Deletes user in database.
+ *       User to be deleted is specified by email in the payload of the auth token sent.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted.
+ *       400:
+ *         description: Verification code invalid.
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/delete/verify", jwtController.verifyAuthToken, userManagementController.verifyDelete);
+
 module.exports = router;
