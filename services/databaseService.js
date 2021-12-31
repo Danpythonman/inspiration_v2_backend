@@ -74,10 +74,24 @@ const updateUserName = async (email, updatedName) => {
     return await UserModel.findOneAndUpdate({ email: email }, { name: updatedName });
 }
 
+/**
+ * Changes the specified user's secret hashes for auth and refresh tokens.
+ *
+ * @param {string} email The email of the user.
+ * @param {string} userAuthHash New secret hash for user's auth tokens.
+ * @param {string} userRefreshHash New secret hash for user's refresh tokens.
+ *
+ * @returns {Promise} The updated object of the user. If update unsuccessful, undefined is returned.
+ */
+const changeUserSecretHashes = async (email, userAuthHash, userRefreshHash) => {
+    return await UserModel.findOneAndUpdate({ email: email }, { authTokenHash: userAuthHash, refreshTokenHash: userRefreshHash });
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
     createVerificationRequest,
     getVerificationRequestByEmail,
-    updateUserName
+    updateUserName,
+    changeUserSecretHashes
 };
