@@ -43,9 +43,10 @@ const getUserByEmail = async (email) => {
  *
  * @returns {Promise<undefined>}
  */
-const createVerificationRequest = async (email, verificationHash) => {
+const createVerificationRequest = async (email, verificationType, verificationHash) => {
     await VerificationRequestModel.create({
         email: email,
+        verificationType: verificationType,
         verificationHash: verificationHash
     });
 }

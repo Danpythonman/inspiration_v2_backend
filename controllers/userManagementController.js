@@ -19,7 +19,7 @@ const signup = async (req, res) => {
         const verificationCode = cryptographyService.generateVerificationCode();
         const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
 
-        await databaseService.createVerificationRequest(req.body.email, verificationHash);
+        await databaseService.createVerificationRequest(req.body.email, "signup", verificationHash);
 
         await emailService.sendVerificationCode(req.body.email, verificationCode);
 
@@ -39,6 +39,11 @@ const verifySignup = async (req, res) => {
         const verificationRequest = await databaseService.getVerificationRequestByEmail(req.body.email);
         if (!verificationRequest) {
             res.status(404).send(`Verification time exceeded, or ${req.body.email} has not registered for verification yet`);
+            return;
+        }
+
+        if (verificationRequest.verificationType !== "signup") {
+            res.status(400).send(`Verification for ${verificationRequest.verificationType} received for signup verification`);
             return;
         }
 
@@ -75,7 +80,7 @@ const login = async (req, res) => {
 
         await databaseService.createVerificationRequest(req.body.email, verificationHash);
 
-        await emailService.sendVerificationCode(req.body.email, verificationCode);
+        await emailService.sendVerificationCode(req.body.email, "login", verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
@@ -89,6 +94,11 @@ const verifyLogin = async (req, res) => {
         const verificationRequest = await databaseService.getVerificationRequestByEmail(req.body.email);
         if (!verificationRequest) {
             res.status(404).send(`Verification time exceeded, or ${req.body.email} has not registered for verification yet`);
+            return;
+        }
+
+        if (verificationRequest.verificationType !== "login") {
+            res.status(400).send(`Verification for ${verificationRequest.verificationType} received for login verification`);
             return;
         }
 
@@ -173,7 +183,7 @@ const requestDelete = async (req, res) => {
         const verificationCode = cryptographyService.generateVerificationCode();
         const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
 
-        await databaseService.createVerificationRequest(req.token.email, verificationHash);
+        await databaseService.createVerificationRequest(req.token.email, "delete", verificationHash);
 
         await emailService.sendVerificationCode(req.token.email, verificationCode);
 
@@ -189,6 +199,11 @@ const verifyDelete = async (req, res) => {
         const verificationRequest = await databaseService.getVerificationRequestByEmail(req.token.email);
         if (!verificationRequest) {
             res.status(404).send(`Verification time exceeded, or ${req.token.email} has not registered for verification yet`);
+            return;
+        }
+
+        if (verificationRequest.verificationType !== "delete") {
+            res.status(400).send(`Verification for ${verificationRequest.verificationType} received for delete verification`);
             return;
         }
 

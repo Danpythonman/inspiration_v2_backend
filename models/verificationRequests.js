@@ -13,6 +13,11 @@ const VerificationRequestSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid email address`
         }
     },
+    verificationType: {
+        type: String,
+        enum: ["signup", "login", "delete"],
+        required: true
+    },
     verificationHash: {
         type: String,
         required: true

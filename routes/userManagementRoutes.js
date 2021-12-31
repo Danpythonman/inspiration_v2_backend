@@ -52,7 +52,7 @@ router.post("/signup", userManagementController.signup);
  *       201:
  *         description: Email verified, database entry created and auth and refresh tokens sent.
  *       400:
- *         description: Verification code invalid.
+ *         description: Verification code invalid or the verification request's verification type is not signup.
  *       404:
  *         description: Verification time limit exceeded, or email has not been registered for verification.
  *       500:
@@ -108,7 +108,7 @@ router.post("/login", userManagementController.login);
  *       200:
  *         description: Email verified, auth and refresh tokens sent.
  *       400:
- *         description: Verification code invalid.
+ *         description: Verification code invalid or the verification request's verification type is not login.
  *       404:
  *         description: Verification time limit exceeded, email has not been registered for verification, or user with specified email not found.
  *       500:
@@ -230,7 +230,7 @@ router.post("/delete", jwtController.verifyAuthToken, userManagementController.r
  *       200:
  *         description: User deleted.
  *       400:
- *         description: Verification code invalid.
+ *         description: Verification code invalid or the verification request's verification type is not delete.
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:
