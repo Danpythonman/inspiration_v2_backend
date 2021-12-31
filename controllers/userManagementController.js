@@ -78,9 +78,9 @@ const login = async (req, res) => {
         const verificationCode = cryptographyService.generateVerificationCode();
         const verificationHash = await cryptographyService.generateVerificationHash(verificationCode);
 
-        await databaseService.createVerificationRequest(req.body.email, verificationHash);
+        await databaseService.createVerificationRequest(req.body.email, "login", verificationHash);
 
-        await emailService.sendVerificationCode(req.body.email, "login", verificationCode);
+        await emailService.sendVerificationCode(req.body.email, verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
