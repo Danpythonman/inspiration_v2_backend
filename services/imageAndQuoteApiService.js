@@ -21,6 +21,26 @@ const getImage = async () => {
     };
 }
 
+/**
+ * Gets the quote of the day from They Said So Quotes API
+ * (https://quotes.rest/).
+ *
+ * @returns {Promise} Returns an object containing the quote of the day, its quote id, and the author of the quote.
+ */
+ const getQuote = async () => {
+    const response = await fetch("https://quotes.rest/qod?category=inspire");
+
+    const responseObject = await response.json();
+
+    // We only use these properties of the response object
+    return {
+        quoteId: responseObject.contents.quotes[0].id,
+        quote: responseObject.contents.quotes[0].quote,
+        author: responseObject.contents.quotes[0].author
+    };
+}
+
 module.exports = {
-    getImage
+    getImage,
+    getQuote
 };
