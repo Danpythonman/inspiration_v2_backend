@@ -1,6 +1,7 @@
 const VerificationRequestModel = require("../models/verificationRequests");
 const UserModel = require("../models/users");
 const ImageOfTheDayModel = require("../models/ImageOfTheDay");
+const QuoteOfTheDayModel = require("../models/QuoteOfTheDay");
 
 /**
  * Creates a user document in the database.
@@ -116,7 +117,7 @@ const deleteUser = async (email) => {
 }
 
 /**
- * Sets the image of the day document.
+ * Creates the image of the day document.
  *
  * @param {object} imageOfTheDayObject Object containing the image URL, title, photographer, and description.
  * @param {string} imageOfTheDayObject.imageUrl The URL of the image.
@@ -131,7 +132,7 @@ const deleteUser = async (email) => {
 }
 
 /**
- * Sets the image of the day document.
+ * Updates the image of the day document.
  *
  * @param {string} currentImageUrl The URL for the current image of the day.
  * @param {object} newImageOfTheDayObject Object containing the URL, title, photographer, and description of the new image.
@@ -165,6 +166,55 @@ const getImageOfTheDay = async () => {
     return imageArray[0];
 }
 
+/**
+ * Creates the quote of the day document.
+ *
+ * @param {object} quoteOfTheDayObject Object containing the quote id, quote text, and quote author.
+ * @param {string} quoteOfTheDayObject.quoteId The id of the quote.
+ * @param {string} quoteOfTheDayObject.quote The text of the quote.
+ * @param {string} quoteOfTheDayObject.author The author of the quote.
+ *
+ * @returns {Promise} The quote of the day document in the database.
+ */
+ const createQuoteOfTheDay = async (quoteOfTheDayObject) => {
+    return await QuoteOfTheDayModel.create(quoteOfTheDayObject);
+}
+
+/**
+ * Updates the quote of the day document.
+ *
+ * @param {string} currentQuoteId The id of the current quote of the day.
+ * @param {object} newQuoteOfTheDayObject Object containing the quote id, quote text, and quote author.
+ * @param {string} newQuoteOfTheDayObject.quoteId The id of the quote.
+ * @param {string} newQuoteOfTheDayObject.quote The text of the quote.
+ * @param {string} newQuoteOfTheDayObject.author The author of the quote.
+ *
+ * @returns {Promise} The quote of the day document in the database.
+ */
+ const setQuoteOfTheDay = async (currentQuoteId, newQuoteOfTheDayObject) => {
+    return await QuoteOfTheDayModel.findOneAndUpdate({ quoteId: currentQuoteId }, newQuoteOfTheDayObject);
+}
+
+/**
+ * Gets the quote of the day document from the database.
+ *
+ * @returns {Promise} The quote of the day object. If nothing is found, undefined is returned.
+ */
+ const getQuoteOfTheDay = async () => {
+    // There is only one quote of the day document in the collection
+    // (when getting a new quote this document is updated instead of adding more documents).
+    // This means that this will return an array with one document.
+    const quoteArray = await QuoteOfTheDayModel.find({});
+
+    // If the array is empty, the quote of the day document was not found.
+    if (quoteArray.length < 1) {
+        return undefined;
+    }
+
+    // If the array is not empty, then it has one element, which is the quote of the day document.
+    return quoteArray[0];
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -176,5 +226,8 @@ module.exports = {
     deleteUser,
     createImageOfTheDay,
     setImageOfTheDay,
-    getImageOfTheDay
+    getImageOfTheDay,
+    createQuoteOfTheDay,
+    setQuoteOfTheDay,
+    getQuoteOfTheDay
 };
