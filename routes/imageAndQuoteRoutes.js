@@ -29,4 +29,30 @@ const imageAndQuoteController = require("../controllers/imageAndQuoteController"
  */
 router.get("/image", imageAndQuoteController.getImage);
 
+/**
+ * @swagger
+ * /quote:
+ *   get:
+ *     tags:
+ *       - Image and Quote of the Day
+ *     description: Gets the quote of the day.
+ *     responses:
+ *       200:
+ *         description: Object containing quote, its quote id, and the author of the quote.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               quoteId:
+ *                 type: string
+ *               quote:
+ *                 type: string
+ *               author:
+ *                 type: string
+ *       404:
+ *         description: Quote not found.
+ *       500:
+ *         description: Internal server error.
+ */
+ router.get("/quote", imageAndQuoteController.getQuote);
+
 module.exports = router;
