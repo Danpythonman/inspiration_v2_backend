@@ -107,6 +107,13 @@ router.post("/login", userManagementController.login);
  *     responses:
  *       200:
  *         description: Email verified, auth and refresh tokens sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               auth:
+ *                 type: string
+ *               refresh:
+ *                 type: string
  *       400:
  *         description: Verification code invalid or the verification request's verification type is not login.
  *       404:
