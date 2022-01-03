@@ -137,6 +137,15 @@ const refresh = async (req, res) => {
     }
 }
 
+const getNameAndEmail = async (req, res) => {
+    try {
+        // req.token and req.body.user are created by the jwtController middlewear
+        res.status(200).send({ email: req.token.email, name: req.body.user.name });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 const changeName = async (req, res) => {
     try {
         // req.token and req.body.user are created by the jwtController middlewear
@@ -237,6 +246,7 @@ module.exports = {
     login,
     verifyLogin,
     refresh,
+    getNameAndEmail,
     changeName,
     revokeTokens,
     requestDelete,

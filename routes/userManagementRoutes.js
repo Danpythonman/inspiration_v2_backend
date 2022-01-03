@@ -139,6 +139,34 @@ router.post("/refresh", jwtController.verifyRefreshToken, userManagementControll
 
 /**
  * @swagger
+ * /user:
+ *   get:
+ *     tags:
+ *       - User Management
+ *     description: Retrieves the name and email of the user specified in the auth token sent.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Object containing the name and email of the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/user", jwtController.verifyAuthToken, userManagementController.getNameAndEmail);
+
+/**
+ * @swagger
  * /name:
  *   put:
  *     tags:
