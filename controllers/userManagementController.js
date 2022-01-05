@@ -120,7 +120,7 @@ const verifyLogin = async (req, res) => {
 
         await databaseService.deleteVerificationRequest(req.body.email);
 
-        res.status(200).send({ auth: authToken, refresh: refreshToken });
+        res.status(200).send({ auth: authToken, refresh: refreshToken, email: loginUser.email, name: loginUser.name });
     } catch (err) {
         res.status(500).send(err.message);
     }
