@@ -265,6 +265,14 @@ router.post("/delete", jwtController.verifyAuthToken, userManagementController.r
  *       User to be deleted is specified by email in the payload of the auth token sent.
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       description: Object containing verification code.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             verificationCode:
+ *               type: string
  *     responses:
  *       200:
  *         description: User deleted.
