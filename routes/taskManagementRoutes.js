@@ -74,7 +74,7 @@ router.get("/tasks", jwtController.verifyAuthToken, taskManagementController.get
  *   put:
  *     tags:
  *       - Task Management
- *     description: Updates a task in the task list of the user specified in the auth token sent.
+ *     description: Updates the content of a task in the task list of the user specified in the auth token sent.
  *     requestBody:
  *       description: Object containing the _id of the task to update and the new value of its content.
  *       required: true
@@ -96,6 +96,35 @@ router.get("/tasks", jwtController.verifyAuthToken, taskManagementController.get
  *         description: Internal server error or error when updating task.
  */
 router.put("/task", jwtController.verifyAuthToken, taskManagementController.updateTask);
+
+/**
+ * @swagger
+ * /task/complete:
+ *   put:
+ *     tags:
+ *       - Task Management
+ *     description: Updates the completion status of a task in the task list of the user specified in the auth token sent.
+ *     requestBody:
+ *       description: Object containing the _id of the task to update and its new completion status.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             taskId:
+ *               type: string
+ *             completed:
+ *               type: boolean
+ *     responses:
+ *       200:
+ *         description: Task successfully completed/uncompleted.
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put("/task/complete", jwtController.verifyAuthToken, taskManagementController.updateTaskCompletion);
 
 /**
  * @swagger

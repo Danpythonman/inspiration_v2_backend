@@ -217,7 +217,7 @@ const getImageOfTheDay = async () => {
 }
 
 /**
- * Adds a task in the specified users array of tasks.
+ * Adds a task in the specified user's array of tasks.
  *
  * @param {string} email The email of the user to whom the task is being added to.
  * @param {string} task The text of the task.
@@ -238,7 +238,7 @@ const addTask = async (email, task) => {
 }
 
 /**
- * Updates a task in the specified users array of tasks by replacing the text of the task.
+ * Updates a task in the specified user's array of tasks by replacing the text of the task.
  *
  * @param {string} email The email of the user for whom the task is being updated.
  * @param {string} taskId The ObjectId of the task in the user's array of tasks to be updated.
@@ -258,7 +258,27 @@ const updateTask = async (email, taskId, task) => {
 }
 
 /**
- * Deletes a task in the specified users array of tasks.
+ * Updates the completion status of a task in the specified user's array of tasks.
+ *
+ * @param {string} email The email of the user for whom the task's completion status is being updated.
+ * @param {string} taskId The ObjectId of the task in the user's array of tasks to be updated.
+ * @param {string} completed The new completion status of the task.
+ *
+ * @returns {Promise} The object of the user with the task's completion status updated in their array of tasks.
+ */
+const updateTaskCompletion = async (email, taskId, completed) => {
+    return await UserModel.findOneAndUpdate(
+        { email: email, "tasks._id": taskId },
+        {
+            $set: {
+                "tasks.$.completed": completed
+            }
+        }
+    );
+}
+
+/**
+ * Deletes a task in the specified user's array of tasks.
  *
  * @param {string} email The email of the user for whom the task is being deleted.
  * @param {string} taskId The ObjectId of the task in the user's array of tasks to be deleted.
@@ -295,5 +315,6 @@ module.exports = {
     getQuoteOfTheDay,
     addTask,
     updateTask,
+    updateTaskCompletion,
     deleteTask
 };
