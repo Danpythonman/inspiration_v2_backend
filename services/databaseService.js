@@ -20,6 +20,7 @@ const QuoteOfTheDayModel = require("../models/QuoteOfTheDay");
         name: name,
         authTokenHash: authSecretHash,
         refreshTokenHash: refreshSecretHash,
+        tasks: [],
         lastLoginDate: Date.now()
     });
 }
