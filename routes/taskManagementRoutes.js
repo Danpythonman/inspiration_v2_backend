@@ -49,6 +49,7 @@ router.post("/task", jwtController.verifyAuthToken, taskManagementController.add
  *                   properties:
  *                     _id:
  *                       type: string
+ *                       format: ObjectId
  *                     content:
  *                       type: string
  *                     completed:
@@ -83,6 +84,7 @@ router.get("/tasks", jwtController.verifyAuthToken, taskManagementController.get
  *           schema:
  *             taskId:
  *               type: string
+ *               format: ObjectId
  *             task:
  *               type: string
  *     responses:
@@ -112,6 +114,7 @@ router.put("/task", jwtController.verifyAuthToken, taskManagementController.upda
  *           schema:
  *             taskId:
  *               type: string
+ *               format: ObjectId
  *             completed:
  *               type: boolean
  *     responses:
@@ -141,6 +144,7 @@ router.put("/task/complete", jwtController.verifyAuthToken, taskManagementContro
  *           schema:
  *             taskId:
  *               type: string
+ *               format: ObjectId
  *     responses:
  *       200:
  *         description: Task successfully deleted.
