@@ -216,6 +216,68 @@ const getImageOfTheDay = async () => {
     return quoteArray[0];
 }
 
+/**
+ * Adds a task in the specified users array of tasks.
+ *
+ * @param {string} email The email of the user to whom the task is being added to.
+ * @param {string} task The text of the task.
+ *
+ * @returns {Promise} The object of the user with the task added in their array of tasks.
+ */
+const addTask = async (email, task) => {
+    return await UserModel.findOneAndUpdate(
+        { email: email },
+        {
+            $push: {
+                tasks: {
+                    content: task
+                }
+            }
+        }
+    );
+}
+
+/**
+ * Updates a task in the specified users array of tasks by replacing the text of the task.
+ *
+ * @param {string} email The email of the user for whom the task is being updated.
+ * @param {string} taskId The ObjectId of the task in the user's array of tasks to be updated.
+ * @param {string} task The new text of the task.
+ *
+ * @returns {Promise} The object of the user with the task updated in their array of tasks.
+ */
+const updateTask = async (email, taskId, task) => {
+    return await UserModel.findOneAndUpdate(
+        { email: email, "tasks._id": taskId },
+        {
+            $set: {
+                "tasks.$.content": task
+            }
+        }
+    );
+}
+
+/**
+ * Deletes a task in the specified users array of tasks.
+ *
+ * @param {string} email The email of the user for whom the task is being deleted.
+ * @param {string} taskId The ObjectId of the task in the user's array of tasks to be deleted.
+ *
+ * @returns {Promise} The object of the user with the task deleted in their array of tasks.
+ */
+const deleteTask = async (email, taskId) => {
+    return await UserModel.findOneAndUpdate(
+        { email: email },
+        {
+            $pull: {
+                tasks: {
+                    _id: taskId
+                }
+            }
+        }
+    );
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -230,5 +292,8 @@ module.exports = {
     getImageOfTheDay,
     createQuoteOfTheDay,
     setQuoteOfTheDay,
-    getQuoteOfTheDay
+    getQuoteOfTheDay,
+    addTask,
+    updateTask,
+    deleteTask
 };
