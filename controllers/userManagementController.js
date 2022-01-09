@@ -21,7 +21,7 @@ const signup = async (req, res) => {
 
         await databaseService.createVerificationRequest(req.body.email, "signup", verificationHash);
 
-        await emailService.sendVerificationCode(req.body.email, verificationCode);
+        await emailService.sendVerificationCode(req.body.email, "Signup", verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
@@ -82,7 +82,7 @@ const login = async (req, res) => {
 
         await databaseService.createVerificationRequest(req.body.email, "login", verificationHash);
 
-        await emailService.sendVerificationCode(req.body.email, verificationCode);
+        await emailService.sendVerificationCode(req.body.email, "Login", verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.body.email}`);
     } catch (err) {
@@ -198,7 +198,7 @@ const requestDelete = async (req, res) => {
 
         await databaseService.createVerificationRequest(req.token.email, "delete", verificationHash);
 
-        await emailService.sendVerificationCode(req.token.email, verificationCode);
+        await emailService.sendVerificationCode(req.token.email, "Delete Account", verificationCode);
 
         res.status(200).send(`Verification code sent to ${req.token.email}`);
     } catch (err) {
