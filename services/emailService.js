@@ -30,9 +30,9 @@ const sendVerificationCode = async (emailRecipient, endpoint, verificationCode) 
         `
     }
 
-    // If the test email environment variables are set, then use them
-    // otherwise, use the email environment variables for production    
-    const transporter = process.env.TEST_EMAIL_HOST
+    // If the email environment variable is set to "test", then use the test email environment variables.
+    // otherwise, use the email environment variables for production.
+    const transporter = process.env.EMAIL_ENVIRONMENT === "test"
         ? nodemailer.createTransport({
             host: process.env.TEST_EMAIL_HOST,
             port: process.env.TEST_EMAIL_PORT,
