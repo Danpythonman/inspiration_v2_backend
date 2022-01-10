@@ -12,6 +12,14 @@ const QuoteOfTheDaySchema = new mongoose.Schema({
     author: {
         type: String,
         required: true
+    },
+    expiresAt: {
+        type: Date,
+        // 28,800 seconds in 8 hours
+        // By They Said So Quotes API's terms of service (https://theysaidso.com/terms#api)
+        // the quotes cannot be stored for more than 8 hours.
+        expires: 28_800,
+        default: Date.now
     }
 }, { timestamps: true }
 );
