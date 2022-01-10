@@ -19,7 +19,28 @@ const taskManagementController = require("../controllers/taskManagementControlle
  *               type: string
  *     responses:
  *       200:
- *         description: Task successfully created.
+ *         description: Object containing array of the user's tasks, including the newly added task.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       format: ObjectId
+ *                     content:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:
@@ -89,7 +110,28 @@ router.get("/tasks", jwtController.verifyAuthToken, taskManagementController.get
  *               type: string
  *     responses:
  *       200:
- *         description: Task successfully updated.
+ *         description: Object containing array of the user's tasks, including the newly updated task.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       format: ObjectId
+ *                     content:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:
@@ -119,7 +161,28 @@ router.put("/task", jwtController.verifyAuthToken, taskManagementController.upda
  *               type: boolean
  *     responses:
  *       200:
- *         description: Task successfully completed/uncompleted.
+ *         description: Object containing array of the user's tasks, including the newly updated completion status of the task.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       format: ObjectId
+ *                     content:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:
@@ -147,7 +210,28 @@ router.put("/task/complete", jwtController.verifyAuthToken, taskManagementContro
  *               format: ObjectId
  *     responses:
  *       200:
- *         description: Task successfully deleted.
+ *         description: Object containing array of the user's tasks, without the newly deleted task.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               tasks:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       format: ObjectId
+ *                     content:
+ *                       type: string
+ *                     completed:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
  *       404:

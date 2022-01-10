@@ -233,7 +233,8 @@ const addTask = async (email, task) => {
                     content: task
                 }
             }
-        }
+        },
+        { new: true }
     );
 }
 
@@ -253,7 +254,8 @@ const updateTask = async (email, taskId, task) => {
             $set: {
                 "tasks.$.content": task
             }
-        }
+        },
+        { new: true }
     );
 }
 
@@ -273,7 +275,8 @@ const updateTaskCompletion = async (email, taskId, completed) => {
             $set: {
                 "tasks.$.completed": completed
             }
-        }
+        },
+        { new: true }
     );
 }
 
@@ -294,7 +297,8 @@ const deleteTask = async (email, taskId) => {
                     _id: taskId
                 }
             }
-        }
+        },
+        { new: true }
     );
 }
 

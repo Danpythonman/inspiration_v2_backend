@@ -11,7 +11,7 @@ const addTask = async (req, res) => {
             return;
         }
 
-        res.status(200).send("Task created");
+        res.status(200).send(taskUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -37,7 +37,7 @@ const updateTask = async (req, res) => {
             return;
         }
 
-        res.status(200).send("Task updated");
+        res.status(200).send(updateTaskUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -54,7 +54,7 @@ const updateTaskCompletion = async (req, res) => {
             return;
         }
 
-        res.status(200).send(`Task successfully ${req.body.completed ? "completed" : "uncompleted"}`);
+        res.status(200).send(updateTaskCompletionUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -71,7 +71,7 @@ const deleteTask = async (req, res) => {
             return;
         }
 
-        res.status(200).send("Task deleted");
+        res.status(200).send(deleteTaskUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
     }
