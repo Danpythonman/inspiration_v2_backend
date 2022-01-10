@@ -23,6 +23,6 @@ app.use(userManagementRoutes);
 app.use(imageAndQuoteRoutes);
 app.use(taskManagementRoutes);
 
-app.listen(process.env.PORT | 5000, () => {
-    console.log(`Listening on PORT ${process.env.PORT | 5000}...`);
+app.listen(process.env.PORT || 5000, () => {
+    console.log(`Listening on PORT ${process.env.PORT || 5000}...`);
 });
