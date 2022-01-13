@@ -37,29 +37,46 @@ const getImage = async (req, res) => {
     }
 }
 
+const addQuote = async (req, res) => {
+    try {
+        const numberOfQuotes = await databaseService.getNumberOfQuotes();
+
+        // Number of quotes currently in the database supplied as an argument so that
+        // we know what index to give the new quote.
+        const newQuote = await databaseService.addQuote(req.body.quote, req.body.author, numberOfQuotes);
+
+        if (!newQuote) {
+            res.status(500).send("Quote was not added");
+        }
+
+        res.status(200).send("Quote added");
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
 const getQuote = async (req, res) => {
     try {
         let quoteOfTheDay = await databaseService.getQuoteOfTheDay();
-        // If quote of the day does not exist in the database, then get quote from API and set it in database
-        if (!quoteOfTheDay) {
-            const quoteOfTheDayObject = await imageAndQuoteApiService.getQuote();
-
-            quoteOfTheDay = await databaseService.createQuoteOfTheDay(quoteOfTheDayObject);
-        }
 
         const timeSinceQuoteUpdate = Date.now() - quoteOfTheDay.updatedAt.getTime();
 
         // There are 86,400,000 milliseconds in a day.
         // So, if 86,400,000 milliseconds have passed since the last quote update,
         // then a day has passed since the last quote update and a new quote can be retrieved.
-        if (timeSinceQuoteUpdate > 86_400_000) {
-            const newQuoteOfTheDay = await imageAndQuoteApiService.getQuote();
+        // if (timeSinceQuoteUpdate > 86_400_000) {
+        if (timeSinceQuoteUpdate > 0) {
+            const numberOfQuotes = await databaseService.getNumberOfQuotes();
 
-            // If the new quote is not the same as the current quote, then update the
-            // quote of the day in the database
-            if (quoteOfTheDay.quoteId !== newQuoteOfTheDay.quoteId) {
-                quoteOfTheDay = await databaseService.setQuoteOfTheDay(quoteOfTheDay.quoteId, newQuoteOfTheDay);
-            }
+            // Random integer between 0 and the number of quotes
+            // (0 inclusive, number of quotes exclusive).
+            // The quote document at the index of this random number will be the
+            // new quote of the day.
+            const indexOfNewQuoteOfTheDay = Math.floor(Math.random() * numberOfQuotes);
+
+            await databaseService.unsetQuoteOfTheDay();
+
+            quoteOfTheDay = await databaseService.setQuoteOfTheDay(indexOfNewQuoteOfTheDay);
         }
 
         if (!quoteOfTheDay) {
@@ -75,5 +92,6 @@ const getQuote = async (req, res) => {
 
 module.exports = {
     getImage,
+    addQuote,
     getQuote
 };

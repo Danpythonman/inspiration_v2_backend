@@ -168,52 +168,72 @@ const getImageOfTheDay = async () => {
 }
 
 /**
- * Creates the quote of the day document.
+ * Adds a quote of the day document to the quotes collection of the database.
  *
- * @param {object} quoteOfTheDayObject Object containing the quote id, quote text, and quote author.
- * @param {string} quoteOfTheDayObject.quoteId The id of the quote.
- * @param {string} quoteOfTheDayObject.quote The text of the quote.
- * @param {string} quoteOfTheDayObject.author The author of the quote.
+ * @param {string} quote The text of the quote.
+ * @param {string} author The author of the quote.
+ * @param {int} index The new index to assign the quote of the day document in the database
+ *                    (this is the number of the documents in the quotes collection
+ *                    before this document was added).
  *
- * @returns {Promise} The quote of the day document in the database.
+ * @returns {Promise} The added quote of the day document in the database.
  */
- const createQuoteOfTheDay = async (quoteOfTheDayObject) => {
-    return await QuoteOfTheDayModel.create(quoteOfTheDayObject);
+const addQuote = async (quote, author, index) => {
+    // If index == 0, then this will be the only quote of the day document in the database,
+    // so it must be the quote of the day, so set quoteOfTheDay to true.
+    // If index != 0, then this is not the only quote in the database,
+    // so it does not have to be quote of the day, so set quoteOfTheDay to false.
+    return await QuoteOfTheDayModel.create({
+        index: index,
+        quote: quote,
+        author: author,
+        quoteOfTheDay: index == 0
+    });
 }
 
 /**
- * Updates the quote of the day document.
+ * Sets the quote document with the specified index as the quote of the day.
  *
- * @param {string} currentQuoteId The id of the current quote of the day.
- * @param {object} newQuoteOfTheDayObject Object containing the quote id, quote text, and quote author.
- * @param {string} newQuoteOfTheDayObject.quoteId The id of the quote.
- * @param {string} newQuoteOfTheDayObject.quote The text of the quote.
- * @param {string} newQuoteOfTheDayObject.author The author of the quote.
+ * This finds the quote object with the specified index and sets its quoteOfTheDay property to true.
+ *
+ * @param {int} index Index of the specified quote document in the database.
  *
  * @returns {Promise} The quote of the day document in the database.
  */
- const setQuoteOfTheDay = async (currentQuoteId, newQuoteOfTheDayObject) => {
-    return await QuoteOfTheDayModel.findOneAndUpdate({ quoteId: currentQuoteId }, newQuoteOfTheDayObject);
+ const setQuoteOfTheDay = async (index) => {
+    return await QuoteOfTheDayModel.findOneAndUpdate({ index: index }, { quoteOfTheDay: true }, { new: true });
+}
+
+/**
+ * Unsets the current quote of the day.
+ *
+ * This finds the current quote document and sets its quoteOfTheDay property to false.
+ *
+ * @returns {Promise<undefined>}
+ */
+const unsetQuoteOfTheDay = async () => {
+    await QuoteOfTheDayModel.findOneAndUpdate({ quoteOfTheDay: true }, { quoteOfTheDay: false });
 }
 
 /**
  * Gets the quote of the day document from the database.
+ * This is the quote document with its quoteOfTheDay property set to true.
  *
  * @returns {Promise} The quote of the day object. If nothing is found, undefined is returned.
  */
  const getQuoteOfTheDay = async () => {
-    // There is only one quote of the day document in the collection
-    // (when getting a new quote this document is updated instead of adding more documents).
-    // This means that this will return an array with one document.
-    const quoteArray = await QuoteOfTheDayModel.find({});
+    // There is only one document that is the quote of the day (quoteOfTheDay property set to true)
+    // at a time, so we only need to find one.
+    return await QuoteOfTheDayModel.findOne({ quoteOfTheDay: true });
+}
 
-    // If the array is empty, the quote of the day document was not found.
-    if (quoteArray.length < 1) {
-        return undefined;
-    }
-
-    // If the array is not empty, then it has one element, which is the quote of the day document.
-    return quoteArray[0];
+/**
+ * Returns the number of quotes in the quote of the day collection of the database.
+ *
+ * @returns {Promise} The number of quotes in the quote of the day collection of the database.
+ */
+const getNumberOfQuotes = async () => {
+    return await QuoteOfTheDayModel.countDocuments({});
 }
 
 /**
@@ -314,9 +334,11 @@ module.exports = {
     createImageOfTheDay,
     setImageOfTheDay,
     getImageOfTheDay,
-    createQuoteOfTheDay,
+    addQuote,
     setQuoteOfTheDay,
+    unsetQuoteOfTheDay,
     getQuoteOfTheDay,
+    getNumberOfQuotes,
     addTask,
     updateTask,
     updateTaskCompletion,

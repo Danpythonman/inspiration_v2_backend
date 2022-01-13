@@ -32,6 +32,31 @@ router.get("/image", imageAndQuoteController.getImage);
 /**
  * @swagger
  * /quote:
+ *   post:
+ *     tags:
+ *       - Image and Quote of the Day
+ *     description: Adds a quote to the database of quotes.
+ *     requestBody:
+ *       description: Object quote text and the author of the quote.
+ *       required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               quote:
+ *                 type: string
+ *               author:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Quote added.
+ *       500:
+ *         description: Error when adding quote to database or internal server error.
+ */
+router.post("/quote", imageAndQuoteController.addQuote);
+
+/**
+ * @swagger
+ * /quote:
  *   get:
  *     tags:
  *       - Image and Quote of the Day
@@ -42,12 +67,17 @@ router.get("/image", imageAndQuoteController.getImage);
  *         content:
  *           application/json:
  *             schema:
- *               quoteId:
+ *               _id:
  *                 type: string
+ *                 format: ObjectId
+ *               index:
+ *                 type: number
  *               quote:
  *                 type: string
  *               author:
  *                 type: string
+ *               quoteOfTheDay:
+ *                 type: true
  *       404:
  *         description: Quote not found.
  *       500:

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const QuoteOfTheDaySchema = new mongoose.Schema({
-    quoteId: {
-        type: String,
+    index: {
+        type: Number,
         required: true
     },
     quote: {
@@ -13,22 +13,21 @@ const QuoteOfTheDaySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    expiresAt: {
-        type: Date,
-        // 28,800 seconds in 8 hours
-        // By They Said So Quotes API's terms of service (https://theysaidso.com/terms#api)
-        // the quotes cannot be stored for more than 8 hours.
-        expires: 28_800,
-        default: Date.now
+    // The quoteOfTheDay property is true for a quote entry if it is the quote
+    // being displayed by the frontend for the day, and is false otherwise.
+    quoteOfTheDay: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, { timestamps: true }
 );
 
 /**
- * Quote of the day contains the quote, the author of the quote, and the id of the quote from the API.
+ * Quote of the day contains the quote, the author of the quote, and the index of the quote.
  *
  * Timestamps are enabled so the updatedAt property can be used to check if a day has passed
- * since the quote was changed, and a new quote can be retrieved.
+ * since the quote was changed (i.e. quoteOfTheDay set to true), and a new quote of the day can be chosen.
  */
 const QuoteOfTheDayModel = mongoose.model("quote", QuoteOfTheDaySchema);
 
