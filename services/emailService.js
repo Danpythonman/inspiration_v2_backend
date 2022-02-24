@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const sgMail = require('@sendgrid/mail');
 
 /**
  * Sends verification code to specified email.
@@ -27,33 +28,26 @@ const sendVerificationCode = async (emailRecipient, endpoint, verificationCode) 
                 </tr>
             </table>
             <p style="font-family: Arial;">This verification code will expire in about 5 minutes. Do not share this code.</p>
-        `
-    }
+        `,
+    };
 
     // If the email environment variable is set to "test", then use the test email environment variables.
-    // otherwise, use the email environment variables for production.
-    const transporter = process.env.EMAIL_ENVIRONMENT === "test"
-        ? nodemailer.createTransport({
+    // Otherwise, use SendGrid (for production).
+    if (process.env.EMAIL_ENVIRONMENT === "test") {
+        const transporter = nodemailer.createTransport({
             host: process.env.TEST_EMAIL_HOST,
             port: process.env.TEST_EMAIL_PORT,
             auth: {
                 user: process.env.TEST_EMAIL_USERNAME,
                 pass: process.env.TEST_EMAIL_PASSWORD
             }
-        })
-        : nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                type: "OAuth2",
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD,
-                clientId: process.env.OAUTH_CLIENTID,
-                clientSecret: process.env.OAUTH_CLIENT_SECRET,
-                refreshToken: process.env.OAUTH_REFRESH_TOKEN
-            }
         });
 
-    await transporter.sendMail(emailMessage);
+        await transporter.sendMail(emailMessage);
+    } else {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        await sgMail.send(emailMessage);
+    }
 }
 
 module.exports = {
