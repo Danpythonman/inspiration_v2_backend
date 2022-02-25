@@ -43,7 +43,12 @@ const addQuote = async (req, res) => {
 
         // Number of quotes currently in the database supplied as an argument so that
         // we know what index to give the new quote.
-        const newQuote = await databaseService.addQuote(req.body.quote, req.body.author, numberOfQuotes);
+        const newQuote = await databaseService.addQuote(
+            req.body.quote,
+            req.body.author,
+            numberOfQuotes,
+            req.body.recommender ? req.body.recommender : null
+        );
 
         if (!newQuote) {
             res.status(500).send("Quote was not added");

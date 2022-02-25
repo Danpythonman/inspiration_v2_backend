@@ -13,6 +13,10 @@ const QuoteOfTheDaySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    recommender: {
+        type: String,
+        required: false
+    },
     // The quoteOfTheDay property is true for a quote entry if it is the quote
     // being displayed by the frontend for the day, and is false otherwise.
     quoteOfTheDay: {

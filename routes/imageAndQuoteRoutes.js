@@ -46,6 +46,9 @@ router.get("/image", imageAndQuoteController.getImage);
  *                 type: string
  *               author:
  *                 type: string
+ *               recommender:
+ *                 type: string
+ *                 required: false
  *     responses:
  *       200:
  *         description: Quote added.
@@ -75,6 +78,8 @@ router.post("/quote", imageAndQuoteController.addQuote);
  *               quote:
  *                 type: string
  *               author:
+ *                 type: string
+ *               recommender:
  *                 type: string
  *               quoteOfTheDay:
  *                 type: true

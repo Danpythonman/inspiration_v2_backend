@@ -190,15 +190,23 @@ const getImageOfTheDay = async () => {
  *
  * @returns {Promise} The added quote of the day document in the database.
  */
-const addQuote = async (quote, author, index) => {
+const addQuote = async (quote, author, index, recommender) => {
     // If index == 0, then this will be the only quote of the day document in the database,
     // so it must be the quote of the day, so set quoteOfTheDay to true.
     // If index != 0, then this is not the only quote in the database,
     // so it does not have to be quote of the day, so set quoteOfTheDay to false.
-    return await QuoteOfTheDayModel.create({
+    return recommender == null
+    ? await QuoteOfTheDayModel.create({
         index: index,
         quote: quote,
         author: author,
+        quoteOfTheDay: index == 0
+    })
+    : await QuoteOfTheDayModel.create({
+        index: index,
+        quote: quote,
+        author: author,
+        recommender: recommender,
         quoteOfTheDay: index == 0
     });
 }
