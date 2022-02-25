@@ -11,6 +11,9 @@ const addTask = async (req, res) => {
             return;
         }
 
+        // Since every task in the database is base64 encoded, we convert them to utf-8 before sending to user.
+        taskUser.tasks.forEach(task => task.content = Buffer.from(task.content, "base64").toString("utf-8"));
+
         res.status(200).send(taskUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
@@ -19,7 +22,10 @@ const addTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
     try {
-        // req.token and req.body.user are created by the jwtController middlewear
+        // req.token and req.body.user are created by the jwtController middlewear.
+        // Since every task in the database is base64 encoded, we convert them to utf-8 before sending to user.
+        req.body.user.tasks.forEach(task => task.content = Buffer.from(task.content, "base64").toString("utf-8"));
+
         res.status(200).send(req.body.user.tasks);
     } catch (err) {
         res.status(500).send(err.message);
@@ -36,6 +42,9 @@ const updateTask = async (req, res) => {
             res.status(500).send(err.message);
             return;
         }
+
+        // Since every task in the database is base64 encoded, we convert them to utf-8 before sending to user.
+        updateTaskUser.tasks.forEach(task => task.content = Buffer.from(task.content, "base64").toString("utf-8"));
 
         res.status(200).send(updateTaskUser.tasks);
     } catch (err) {
@@ -54,6 +63,9 @@ const updateTaskCompletion = async (req, res) => {
             return;
         }
 
+        // Since every task in the database is base64 encoded, we convert them to utf-8 before sending to user.
+        updateTaskCompletionUser.tasks.forEach(task => task.content = Buffer.from(task.content, "base64").toString("utf-8"));
+
         res.status(200).send(updateTaskCompletionUser.tasks);
     } catch (err) {
         res.status(500).send(err.message);
@@ -70,6 +82,9 @@ const deleteTask = async (req, res) => {
             res.status(500).send(err.message);
             return;
         }
+
+        // Since every task in the database is base64 encoded, we convert them to utf-8 before sending to user.
+        deleteTaskUser.tasks.forEach(task => task.content = Buffer.from(task.content, "base64").toString("utf-8"));
 
         res.status(200).send(deleteTaskUser.tasks);
     } catch (err) {

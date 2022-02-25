@@ -238,6 +238,8 @@ const getNumberOfQuotes = async () => {
 
 /**
  * Adds a task in the specified user's array of tasks.
+ * The task content is base64 encoded before being stored in the database so that the tasks for extra privacy
+ * (this way anyone manually looking through the database will not see any tasks).
  *
  * @param {string} email The email of the user to whom the task is being added to.
  * @param {string} task The text of the task.
@@ -250,7 +252,7 @@ const addTask = async (email, task) => {
         {
             $push: {
                 tasks: {
-                    content: task
+                    content: Buffer.from(task, "utf-8").toString("base64")
                 }
             }
         },
@@ -260,6 +262,8 @@ const addTask = async (email, task) => {
 
 /**
  * Updates a task in the specified user's array of tasks by replacing the text of the task.
+ * The task content is base64 encoded before being stored in the database so that the tasks for extra privacy
+ * (this way anyone manually looking through the database will not see any tasks).
  *
  * @param {string} email The email of the user for whom the task is being updated.
  * @param {string} taskId The ObjectId of the task in the user's array of tasks to be updated.
@@ -272,7 +276,7 @@ const updateTask = async (email, taskId, task) => {
         { email: email, "tasks._id": taskId },
         {
             $set: {
-                "tasks.$.content": task
+                "tasks.$.content": Buffer.from(task, "utf-8").toString("base64")
             }
         },
         { new: true }
