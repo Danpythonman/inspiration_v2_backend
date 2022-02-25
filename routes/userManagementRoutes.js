@@ -118,6 +118,8 @@ router.post("/login", userManagementController.login);
  *                 type: string
  *               name:
  *                 type: string
+ *               color:
+ *                 type: string
  *       400:
  *         description: Verification code invalid or the verification request's verification type is not login.
  *       404:
@@ -159,13 +161,15 @@ router.post("/refresh", jwtController.verifyRefreshToken, userManagementControll
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Object containing the name and email of the user.
+ *         description: Object containing the name, email, and color of the user.
  *         content:
  *           application/json:
  *             schema:
  *               email:
  *                 type: string
  *               name:
+ *                 type: string
+ *               color:
  *                 type: string
  *       401:
  *         description: Unauthorized. No auth token sent or auth token invalid.
@@ -204,6 +208,35 @@ router.get("/user", jwtController.verifyAuthToken, userManagementController.getN
  *         description: Internal server error or error when updating user's name.
  */
 router.put("/name", jwtController.verifyAuthToken, userManagementController.changeName);
+
+/**
+ * @swagger
+ * /color:
+ *   put:
+ *     tags:
+ *       - User Management
+ *     description: Changes the color of the user's to-do list.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Object containing user's updated color.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             updatedColor:
+ *               type: string
+ *     responses:
+ *       200:
+ *         description: Color changed successfully.
+ *       401:
+ *         description: Unauthorized. No auth token sent or auth token invalid.
+ *       404:
+ *         description: User specified by email in auth token payload not found.
+ *       500:
+ *         description: Internal server error or error when updating user's name.
+ */
+router.put("/color", jwtController.verifyAuthToken, userManagementController.changeColor);
 
 /**
  * @swagger

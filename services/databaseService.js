@@ -94,6 +94,18 @@ const updateUserName = async (email, updatedName) => {
 }
 
 /**
+ * Updates the color of the user's to-do list in the database of the user with the specified email.
+ *
+ * @param {string} email The email of the user.
+ * @param {string} updatedColor The user's updated color.
+ *
+ * @returns {Promise} The updated object of the user. If update unsuccessful, undefined is returned.
+ */
+ const updateUserColor = async (email, updatedColor) => {
+    return await UserModel.findOneAndUpdate({ email: email }, { color: updatedColor });
+}
+
+/**
  * Changes the specified user's secret hashes for auth and refresh tokens.
  *
  * @param {string} email The email of the user.
@@ -333,6 +345,7 @@ module.exports = {
     getVerificationRequestByEmail,
     deleteVerificationRequest,
     updateUserName,
+    updateUserColor,
     changeUserSecretHashes,
     deleteUser,
     createImageOfTheDay,

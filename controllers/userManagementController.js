@@ -120,7 +120,7 @@ const verifyLogin = async (req, res) => {
 
         await databaseService.deleteVerificationRequest(req.body.email);
 
-        res.status(200).send({ auth: authToken, refresh: refreshToken, email: loginUser.email, name: loginUser.name });
+        res.status(200).send({ auth: authToken, refresh: refreshToken, email: loginUser.email, name: loginUser.name, color: loginUser.color });
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -140,7 +140,7 @@ const refresh = async (req, res) => {
 const getNameAndEmail = async (req, res) => {
     try {
         // req.token and req.body.user are created by the jwtController middlewear
-        res.status(200).send({ email: req.token.email, name: req.body.user.name });
+        res.status(200).send({ email: req.token.email, name: req.body.user.name, color: req.body.user.color });
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -158,6 +158,23 @@ const changeName = async (req, res) => {
         }
 
         res.status(200).send("Name changed successfully");
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
+
+const changeColor = async (req, res) => {
+    try {
+        // req.token and req.body.user are created by the jwtController middlewear
+        const updatedUser = await databaseService.updateUserColor(req.token.email, req.body.updatedColor);
+        if (!updatedUser) {
+            // This is probably not a 404 error because the user had to be found
+            // in the database to pass the JWT middlewear to get to this function.
+            res.status(500).send("Unable to change color");
+            return;
+        }
+
+        res.status(200).send({ email: req.token.email, name: updatedUser.name, color: updatedUser.color });
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -248,6 +265,7 @@ module.exports = {
     refresh,
     getNameAndEmail,
     changeName,
+    changeColor,
     revokeTokens,
     requestDelete,
     verifyDelete

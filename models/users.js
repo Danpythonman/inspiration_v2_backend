@@ -32,6 +32,11 @@ const UserSchema = new mongoose.Schema({
         type: [TaskSchema],
         required: true
     },
+    color: {
+        type: String,
+        required: true,
+        default: "#2196F3"
+    },
     lastLoginDate: {
         type: Date,
         required: false
