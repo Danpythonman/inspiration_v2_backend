@@ -69,8 +69,7 @@ const getQuote = async (req, res) => {
         // There are 86,400,000 milliseconds in a day.
         // So, if 86,400,000 milliseconds have passed since the last quote update,
         // then a day has passed since the last quote update and a new quote can be retrieved.
-        // if (timeSinceQuoteUpdate > 86_400_000) {
-        if (timeSinceQuoteUpdate > 0) {
+        if (timeSinceQuoteUpdate > 86_400_000) {
             const numberOfQuotes = await databaseService.getNumberOfQuotes();
 
             // Random integer between 0 and the number of quotes
