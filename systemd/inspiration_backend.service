@@ -1,0 +1,12 @@
+[Unit]
+Description=Inspiration Website Backend Service
+After=network.target
+
+[Service]
+WorkingDirectory=/path/to/inspiration_backend
+ExecStart=/path/to/node /path/to/inspiration_backend/index.js
+Restart=always
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
